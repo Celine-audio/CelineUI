@@ -169,6 +169,24 @@ public:
                                            juce::Point<int> screenPosition,
                                            juce::Rectangle<int> parentArea) override;
 
+    /** A control's tooltip is pinned to the control rather than to the pointer: its
+        bottom-left corner on the control's top-right, or, with no room above -- a
+        toolbar button -- its top-left on the control's bottom-right. Placed off the
+        pointer, as getTooltipBounds does, a name could land a long way from the thing
+        it names, depending on where in a wide control the mouse happened to rest.
+
+        Needs Celine's JUCE from the commit that added it: stock JUCE, and the fork
+        before it, only ever tell a look and feel where the pointer is. Guarded on the
+        fork's own macro rather than assumed, because each plugin pins JUCE and this
+        kit separately -- a plugin that moves to this kit before it moves JUCE keeps
+        building, with its tips at the pointer until it does. The size is
+        getTooltipBounds' own, so the two cannot disagree. */
+   #if JUCE_CELINE_TOOLTIP_FOR_COMPONENT
+    juce::Rectangle<int> getTooltipBoundsForComponent (const juce::String& tipText,
+                                                       juce::Rectangle<int> componentArea,
+                                                       juce::Rectangle<int> parentArea) override;
+   #endif
+
     /** The bubble the Export options open in. Without this it is JUCE's default,
         which is a light grey panel with a light border — the one bright rectangle
         in a dark window, and it read as a system dialog rather than as part of

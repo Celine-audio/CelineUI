@@ -718,6 +718,26 @@ juce::Rectangle<int> LookAndFeelBase::getTooltipBounds (const juce::String& tipT
         .constrainedWithin (parentArea);
 }
 
+#if JUCE_CELINE_TOOLTIP_FOR_COMPONENT
+juce::Rectangle<int> LookAndFeelBase::getTooltipBoundsForComponent (const juce::String& tipText,
+                                                                      juce::Rectangle<int> componentArea,
+                                                                      juce::Rectangle<int> parentArea)
+{
+    // Sized as getTooltipBounds sizes it; only where it goes differs.
+    const auto size = getTooltipBounds (tipText, parentArea.getCentre(), parentArea);
+
+    // Above and to the right of the control, the shadow margin the box carries being
+    // the gap between the two.
+    auto bounds = size.withPosition (componentArea.getRight(), componentArea.getY() - size.getHeight());
+
+    // No room above: below and to the right instead.
+    if (bounds.getY() < parentArea.getY())
+        bounds.setPosition (componentArea.getRight(), componentArea.getBottom());
+
+    return bounds.constrainedWithin (parentArea);
+}
+#endif
+
 //==============================================================================
 void LookAndFeelBase::drawCallOutBoxBackground (juce::CallOutBox& box, juce::Graphics& g,
                                                 const juce::Path& path, juce::Image& cachedImage)
