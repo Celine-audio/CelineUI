@@ -4,10 +4,20 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
-/** Marks a ToggleButton as one of ours, so it draws as the design's pill rather
-    than JUCE's tick box. A property rather than a subclass because the look and
-    feel is the only thing that cares. */
+/** Marks a ToggleButton as one of ours, so it draws as the house switch rather than
+    JUCE's tick box. A property rather than a subclass because the look and feel is
+    the only thing that cares. */
 inline constexpr const char* pillSwitchProperty = "celinePillSwitch";
+
+/** The house switch's two colours that depend on what it sits on: the track while it
+    is off, and the dot. The track turns accent when on. LookAndFeelBase::applyPalette()
+    sets them for a dark surface; a plugin whose switches sit on a light panel sets
+    its own in its applyPalette(). */
+enum PillSwitchColourIds
+{
+    pillSwitchTrackColourId = 0x2fce1001,
+    pillSwitchDotColourId   = 0x2fce1002,
+};
 
 /** Marks a Label as keeping the font it was given.
 
@@ -36,7 +46,8 @@ inline constexpr const char* largeGlyphProperty = "celineLargeGlyph";
 
     The second is the two controls the design draws its own way — the knob, which
     is `knob.svg` rotated by the value rather than an arc and a pointer, and the
-    switch, a pill with a travelling dot.
+    switch: a track that turns accent when on, with a dot on the side that is made,
+    name left and track right when it has a name, centred when it has none.
 
     Lives in a .cpp, unlike the palette it reads, because it needs the artwork out
     of BinaryData, and Theme.h is included nearly everywhere.

@@ -61,6 +61,8 @@ void LookAndFeelBase::applyPalette()
     setColour (juce::ToggleButton::textColourId, text());
     setColour (juce::ToggleButton::tickColourId, accent());
     setColour (juce::ToggleButton::tickDisabledColourId, line());
+    setColour (pillSwitchTrackColourId, surfaceBright());
+    setColour (pillSwitchDotColourId, text());
 
     setColour (juce::Label::textColourId, text());
     setColour (juce::Label::backgroundColourId, juce::Colours::transparentBlack);
@@ -336,45 +338,39 @@ void LookAndFeelBase::drawToggleButton (juce::Graphics& g, juce::ToggleButton& b
         return;
     }
 
-    juce::ignoreUnused (shouldDrawButtonAsDown);
-
-    // A pill with a travelling dot, which is what the design draws wherever a switch
-    // appears. JUCE's tick box would be the only square-cornered, unfilled control
-    // in the window.
+    // A track that turns accent when on, with a dot on the side that is made. Sized to
+    // itself, not to the button: name left and track right when labelled, centred
+    // otherwise.
     const auto bounds = button.getLocalBounds().toFloat();
+    const bool labelled = button.getButtonText().isNotEmpty();
+    const float h = juce::jmin (bounds.getHeight(), 20.0f);
+    const float w = h * 1.8f;
+
+    const auto track = juce::Rectangle<float> (w, h).withPosition (
+        labelled ? bounds.getRight() - w - 1.0f : bounds.getCentreX() - w * 0.5f,
+        bounds.getCentreY() - h * 0.5f);
+
+    const float alpha = button.isEnabled() ? 1.0f : 0.45f;
     const bool on = button.getToggleState();
 
-    const float height = juce::jmin (bounds.getHeight(), 20.0f);
-    const float width = height * 2.8f;
-    const bool labelled = button.getButtonText().isNotEmpty();
+    auto fill = on ? Theme::accent() : button.findColour (pillSwitchTrackColourId);
 
-    const auto pill = juce::Rectangle<float> (width, height)
-                          .withPosition (labelled ? bounds.getX() : bounds.getCentreX() - width * 0.5f,
-                                         bounds.getCentreY() - height * 0.5f);
+    if (shouldDrawButtonAsHighlighted || shouldDrawButtonAsDown)
+        fill = fill.darker (shouldDrawButtonAsDown ? 0.12f : 0.06f);
 
-    g.setColour (on ? Theme::accent() : Theme::surfaceBright());
-    g.fillRoundedRectangle (pill, height * 0.5f);
+    g.setColour (fill.withMultipliedAlpha (alpha));
+    g.fillRoundedRectangle (track, h * 0.5f);
 
-    if (shouldDrawButtonAsHighlighted)
-    {
-        g.setColour (Theme::text().withAlpha (0.12f));
-        g.fillRoundedRectangle (pill, height * 0.5f);
-    }
-
-    // The dot is the throw, and it sits on the side that says which one is made.
-    const float inset = 1.5f;
-    const float dot = height - inset * 2.0f;
-    const float travel = pill.getWidth() - dot - inset * 2.0f;
-    const float dotX = pill.getX() + inset + (on ? travel : 0.0f);
-
-    g.setColour (Theme::text());
-    g.fillEllipse (juce::Rectangle<float> (dot, dot).withPosition (dotX, pill.getY() + inset));
+    const float inset = 2.0f, dot = h - 2.0f * inset;
+    g.setColour (button.findColour (pillSwitchDotColourId).withMultipliedAlpha (alpha));
+    g.fillEllipse (track.getX() + inset + (on ? w - dot - 2.0f * inset : 0.0f),
+                   track.getY() + inset, dot, dot);
 
     if (labelled)
     {
-        g.setColour (button.findColour (juce::ToggleButton::textColourId));
-        g.setFont (Fonts::light (13.0f));
-        g.drawText (button.getButtonText(), bounds.withTrimmedLeft (pill.getWidth() + 8.0f),
+        g.setColour (button.findColour (juce::ToggleButton::textColourId).withMultipliedAlpha (alpha));
+        g.setFont (Fonts::light (14.0f));
+        g.drawText (button.getButtonText(), bounds.withTrimmedRight (w + 8.0f),
                     juce::Justification::centredLeft, true);
     }
 }
