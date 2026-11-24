@@ -55,6 +55,11 @@ namespace Celine::Theme
         return all;
     }
 
+    bool Palette::parseColour (const juce::String& text, juce::Colour& out)
+    {
+        return fromHex (text, out);
+    }
+
     //==========================================================================
     Palette::Palette()
     {
@@ -321,16 +326,22 @@ namespace Celine::Theme
         loadFrom (stored);
     }
 
-    void Palette::store()
+    juce::Result Palette::store()
     {
-        // Best effort. A theme that cannot be written is worth neither an alert in the
-        // middle of a session nor losing the colours already on screen over.
-        saveTo (storedFile());
+        const auto result = saveTo (storedFile());
+
+        // A write that failed leaves the theme unsaved, because it is. This used to mark
+        // it saved either way, so a read-only folder or a full disk reported "Saved", the
+        // editor let you close it, and the colours were gone at the next reload.
+        if (result.failed())
+            return result;
 
         // Remembered so refreshFromDisk does not read our own write back as somebody
         // else's change.
         lastSeenOnDisk = storedFile().getLastModificationTime();
         dirty = false;
+
+        return result;
     }
 
     //==========================================================================

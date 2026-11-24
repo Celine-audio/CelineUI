@@ -11,8 +11,8 @@ About window, and the few widgets every plugin draws with.
 | **Theming** | `Theme.h`, `ThemeRoles.h`, `ThemePalette.h/.cpp`, `ThemePanel.h/.cpp` |
 | **Look and feel** | `LookAndFeelBase.h/.cpp` |
 | **Assets and type** | `EmbeddedAssets.h/.cpp`, `Fonts.h/.cpp` |
-| **Widgets** | `IconButton.h`, `AboutPanel.h/.cpp`, `ParameterControl.h/.cpp` |
-| **Tests** | `tests/ThemeTests.cpp`, `tests/ThemeReachTests.cpp` |
+| **Widgets** | `IconButton.h`, `AboutPanel.h/.cpp`, `ParameterControl.h/.cpp`, `SegmentedControl.h` |
+| **Tests** | `tests/ThemeTests.cpp`, `tests/ThemeReachTests.cpp`, `tests/SegmentedControlTests.cpp` |
 
 ## Using it from a plugin
 

@@ -33,5 +33,6 @@ target_include_directories(CelineUI INTERFACE "${CMAKE_CURRENT_LIST_DIR}")
 # their own: ThemeReachTests renders the plugin's whole editor, so it only means
 # anything compiled against one.
 set(CELINE_UI_TESTS
+    "${CMAKE_CURRENT_LIST_DIR}/tests/SegmentedControlTests.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/tests/ThemeTests.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/tests/ThemeReachTests.cpp")

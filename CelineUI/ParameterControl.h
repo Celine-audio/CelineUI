@@ -68,9 +68,6 @@ public:
 
     juce::Slider& getSlider() noexcept { return slider; }
 
-    /** Every colour this takes once rather than reading as it draws. See the note in
-        Theme.h: a colour handed to setColour is a snapshot, and a snapshot does not
-        follow a theme change unless something hands it back. */
     /** Which colour fills the travelled part of the arc or track. The plugin's accent
         unless something says otherwise -- GALLERY's strips say otherwise, because a
         knob belonging to one cabinet wears that cabinet's colour.
@@ -82,11 +79,14 @@ public:
         the four strips' knobs back on the accent. */
     void setFillRole (Celine::Theme::Role role);
 
+    /** Every colour this takes once rather than reading as it draws. See the note in
+        Theme.h: a colour handed to setColour is a snapshot, and a snapshot does not
+        follow a theme change unless something hands it back.
+
+        Called from the constructor, where a subclass's override cannot run yet, and
+        again on every lookAndFeelChanged(), where it does. */
     virtual void applyColours();
 
-    /** Pushes the slider's text-box colours onto the box itself, which copied them when
-        it was made and has held them since. */
-    void refreshTextBoxColours();
     void lookAndFeelChanged() override { applyColours(); }
 
     void resized() override;

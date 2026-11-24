@@ -267,6 +267,66 @@ TEST_CASE ("a saved theme is still there next time", "[theme]")
     file.deleteFile();
 }
 
+TEST_CASE ("a typed colour is read the way a file's is", "[theme]")
+{
+    // The theme editor's hex fields go through this, so the spellings a file accepts and
+    // the ones a field accepts cannot drift apart.
+    using Celine::Theme::Palette;
+
+    juce::Colour out;
+
+    CHECK (Palette::parseColour ("#a1b2c3", out));
+    CHECK (out == juce::Colour (0xffa1b2c3));
+
+    CHECK (Palette::parseColour ("  A1B2C3 ", out));
+    CHECK (out == juce::Colour (0xffa1b2c3));
+
+    CHECK (Palette::parseColour ("#abc", out));
+    CHECK (out == juce::Colour (0xffaabbcc));
+
+    // Anything else is refused, and leaves the colour it was given alone.
+    const auto before = out;
+
+    CHECK_FALSE (Palette::parseColour ("#abcd", out));
+    CHECK_FALSE (Palette::parseColour ("not a colour", out));
+    CHECK_FALSE (Palette::parseColour ("", out));
+    CHECK (out == before);
+}
+
+TEST_CASE ("a save that fails leaves the theme unsaved", "[theme]")
+{
+    // A read-only folder or a full disk. The theme editor reads "unsaved" to decide
+    // whether closing needs asking about, so a failed write that cleared the flag let
+    // the window close on colours that existed nowhere but on screen.
+    using namespace Celine::Theme;
+
+    const auto suiteFile = Palette::storedFile();
+
+    // A file where the folder should be: no theme can be written beneath it, on any
+    // platform and without needing permissions to be set up.
+    const auto blocker = juce::File::getSpecialLocation (juce::File::tempDirectory)
+                             .getChildFile ("celine-theme-not-a-folder");
+    blocker.deleteRecursively();
+    REQUIRE (blocker.replaceWithText ("in the way"));
+
+    Palette::useFileForTesting (blocker.getChildFile ("theme.celthm"));
+
+    {
+        Palette chooser;
+        chooser.set (Role::accent, juce::Colour (0xff102030));
+        REQUIRE (chooser.hasUnsavedChanges());
+
+        const auto result = chooser.store();
+
+        CHECK (result.failed());
+        CHECK (result.getErrorMessage().isNotEmpty());
+        CHECK (chooser.hasUnsavedChanges());
+    }
+
+    Palette::useFileForTesting (suiteFile);
+    blocker.deleteFile();
+}
+
 TEST_CASE ("one instance's saved theme reaches another", "[theme]")
 {
     /*

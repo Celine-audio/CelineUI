@@ -76,17 +76,17 @@ void ThemePanel::Row::applyTypedText()
     // Whatever was typed goes through the palette's own reader, so the field and a file
     // accept exactly the same spellings. Anything it will not take puts the field back
     // rather than leaving a value on screen that is not the one in force.
-    Theme::Palette candidate;
-    auto* entries = new juce::DynamicObject();
-    entries->setProperty (Theme::info()[(size_t) role].key, hex.getText());
+    //
+    // The reader on its own, not a throwaway Palette: building one reads the theme file
+    // from disk, which this used to do on every Return and every change of focus.
+    juce::Colour typed;
 
-    auto* root = new juce::DynamicObject();
-    root->setProperty ("colours", juce::var (entries));
-
-    if (candidate.fromVar (juce::var (root)).wasOk())
-        owner.editing = true,
-        Theme::palette().set (role, candidate.get (role)),
+    if (Theme::Palette::parseColour (hex.getText(), typed))
+    {
+        owner.editing = true;
+        Theme::palette().set (role, typed);
         owner.editing = false;
+    }
 
     refresh();
 }
@@ -161,8 +161,6 @@ ThemePanel::ThemePanel()
 
     scroller.setViewedComponent (&rows, false);
     scroller.setScrollBarsShown (true, false);
-    scroller.getVerticalScrollBar().setColour (juce::ScrollBar::thumbColourId,
-                                               Theme::line().withAlpha (0.22f));
     addAndMakeVisible (scroller);
 
     importButton.setTooltip ("Open a .celthm file and use the colours in it.");
@@ -247,6 +245,11 @@ void ThemePanel::applyColours()
     status.setColour (juce::Label::textColourId, Theme::comment());
     close.setColour (juce::TextButton::buttonColourId, Theme::accent());
     close.setColour (juce::TextButton::textColourOffId, Theme::chrome());
+
+    // Here rather than once in the constructor, where it was a snapshot that a theme
+    // change left behind.
+    scroller.getVerticalScrollBar().setColour (juce::ScrollBar::thumbColourId,
+                                               Theme::line().withAlpha (0.22f));
 }
 
 void ThemePanel::refreshRows()
@@ -376,19 +379,25 @@ void ThemePanel::exportTheme()
                           });
 }
 
-void ThemePanel::saveTheme()
+bool ThemePanel::saveTheme()
 {
-    Theme::palette().store();
+    const auto result = Theme::palette().store();
 
     // The swatches have not moved; what has changed is whether there is anything left
     // to save, which is what the status line and the button's own state say.
     refreshRows();
+
+    // After the refresh, which would otherwise write "Unsaved changes" over the reason.
+    if (result.failed())
+        report (result.getErrorMessage());
+
+    return result.wasOk();
 }
 
 void ThemePanel::resetTheme()
 {
-    // Not stored here: the palette writes itself whenever it changes, which is what
-    // stops a colour picked in the one place nobody thought to save from being lost.
+    // Not stored here. Reset is an edit like any other: it changes what is on screen and
+    // marks the theme unsaved, and Save is still what writes it.
     Theme::palette().reset();
     report ("Shipped colours");
 }
@@ -514,9 +523,20 @@ void ThemePanel::confirmClose (std::function<void (bool)> whenDecided)
                 return;
 
             if (chosen == 0)
-                safe->saveTheme();
+            {
+                // A save that failed is not a reason to close: closing now would
+                // discard exactly the colours the person just asked to keep. The window
+                // stays, with the reason in its status line.
+                if (! safe->saveTheme())
+                {
+                    decided (false);
+                    return;
+                }
+            }
             else if (chosen == 1)
+            {
                 Theme::palette().revert();   // back to the last saved theme
+            }
 
             decided (chosen != 2);
         });

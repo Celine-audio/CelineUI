@@ -84,6 +84,12 @@ namespace Celine::Theme
         juce::var toVar() const;
         juce::Result fromVar (const juce::var&);
 
+        /** Reads one colour the way a file's entry is read: with or without the hash,
+            three digits or six. False, leaving `out` alone, for anything else. The theme
+            editor's hex fields go through this, so a field and a file accept exactly the
+            same spellings. */
+        static bool parseColour (const juce::String& text, juce::Colour& out);
+
         juce::Result loadFrom (const juce::File&);
         juce::Result saveTo (const juce::File&) const;
 
@@ -108,8 +114,11 @@ namespace Celine::Theme
 
         /** Writes the theme to `storedFile()`. Explicit: editing a colour changes what
             is on screen and nothing else, so the only thing that ever touches the disk
-            is somebody pressing Save. */
-        void store();
+            is somebody pressing Save.
+
+            On failure the theme stays unsaved and the result says why, so the editor
+            can say so rather than report a save that did not happen. */
+        juce::Result store();
 
         /** Throws away every change since the last save.
 
@@ -156,10 +165,8 @@ namespace Celine::Theme
             own writes is what stops us reloading what we just saved. */
         juce::Time lastSeenOnDisk;
 
-
         std::array<juce::Colour, numRoles> colours;
         juce::String name;
-
     };
 
     //==========================================================================

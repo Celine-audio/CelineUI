@@ -49,13 +49,6 @@ namespace Celine
 
         bool isActive() const noexcept { return active; }
 
-        /** The fill an active button wears. Bypass wants to shout in red where
-            everything else wears the accent. */
-        /** Whether this draws a background of its own.
-
-            Off for a button that sits inside something already drawn as its frame --
-            Céline's undo and redo share one housing painted behind the pair. Such a
-            button shows only its hover, inset so it stays within that housing. */
         /** Which role fills the button when it is framed. Button unless told otherwise
             -- and told otherwise where a button stands on a surface of its own, so that
             re-slating one group of controls does not reach every button in the window.
@@ -70,12 +63,22 @@ namespace Celine
             repaint();
         }
 
+        /** Whether this draws a background of its own.
+
+            Off for a button that sits inside something already drawn as its frame --
+            Céline's undo and redo share one housing painted behind the pair. Such a
+            button shows only its hover, inset so it stays within that housing. */
         void setDrawsFrame (bool shouldDraw)
         {
             drawsFrame = shouldDraw;
             repaint();
         }
 
+        /** The fill an active button wears. Bypass wants to shout in red where
+            everything else wears the accent.
+
+            A colour rather than a role, so it is a snapshot: whoever sets it sets it
+            again from their own applyColours(), or a theme change leaves it behind. */
         void setActiveColour (juce::Colour colour)
         {
             activeColour = colour;

@@ -156,7 +156,6 @@ AboutPanel::AboutPanel()
     wordmarkText.setFont (Fonts::logo (26.0f));
     wordmarkText.setJustificationType (juce::Justification::centredLeft);
     addChildComponent (wordmarkText);
-    wordmarkText.setVisible (wordmark == nullptr);
 
     // One line under the mark saying what it is, since the mark itself does not.
     // Not the product name again -- that is what the artwork above it already says.
@@ -195,10 +194,6 @@ AboutPanel::AboutPanel()
     body.setColour (juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
     body.setColour (juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
     body.setColour (juce::TextEditor::focusedOutlineColourId, juce::Colours::transparentBlack);
-
-    // The kit's scrollbar is near-white, which against this ground is the brightest
-    // thing in the window and reads as a control rather than as a position.
-    body.setColour (juce::ScrollBar::thumbColourId, Theme::line().withAlpha (0.22f));
 
     body.setText (aboutBodyText(), false);
     addAndMakeVisible (body);

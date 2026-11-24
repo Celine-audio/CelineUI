@@ -78,7 +78,6 @@ void LookAndFeelBase::applyPalette()
     // No rule around a field at rest. It is filled with a colour that already separates
     // it from what it stands on, like every button and dropdown here -- and a border on
     // every field is what made these read as system controls dropped into the window.
-    // The focused ring stays: that one is saying something.
     setColour (juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
     // No rule on a focused field either. The caret is already saying where the typing
     // goes, and a ring that appears the moment you click is the one that reads as a

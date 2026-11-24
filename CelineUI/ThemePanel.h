@@ -97,9 +97,11 @@ namespace Celine
 
         void importTheme();
         void exportTheme();
-    /** Writes the colours to this plugin's theme file. Nothing else does. */
-    void saveTheme();
-    void resetTheme();
+
+        /** Writes the colours to this plugin's theme file. Nothing else does. False, with
+            the reason in the status line, when the file could not be written. */
+        bool saveTheme();
+        void resetTheme();
 
         /** Everything this window hands to a child rather than reading as it paints --
             its own title, status line and Close button included. The rows look after

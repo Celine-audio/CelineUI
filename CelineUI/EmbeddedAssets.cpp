@@ -63,13 +63,6 @@ namespace Celine::Assets
     //==========================================================================
     namespace
     {
-        /** How far below the centre of `drawable`'s bounding box its letters are
-            actually centred, as a proportion of that box's height.
-
-            The baseline is taken as the *median* of the glyph bottoms, not the
-            lowest: descenders are the minority by construction -- that is what makes
-            them descenders -- so the middle value is the line the word stands on
-            however many of them there are. */
         /** The band an ordinary letter occupies: baseline to x-height.
 
             Both edges are medians rather than extremes, and that is the whole point. An
@@ -117,6 +110,13 @@ namespace Celine::Assets
             return baseline > top;
         }
 
+        /** How far below the centre of `drawable`'s bounding box its letters are
+            actually centred, as a proportion of that box's height.
+
+            The baseline is taken as the *median* of the glyph bottoms, not the
+            lowest: descenders are the minority by construction -- that is what makes
+            them descenders -- so the middle value is the line the word stands on
+            however many of them there are. */
         float opticalCentreOffset(juce::Drawable& drawable)
         {
             float top = 0.0f, baseline = 0.0f;
