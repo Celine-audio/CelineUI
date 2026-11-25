@@ -15,7 +15,8 @@ namespace Celine
         different width.
 
         Two weights are used: Light for labels and readouts, Bold for the one
-        button that shouts, plus JetBrains Mono for anything that must align. The other weights in `assets/Jura/` are embedded by
+        button that shouts, plus JetBrains Mono for anything that must align. A plugin
+        may name other faces for the first three, in PluginHouseOverrides.h. The other weights in `assets/Jura/` are embedded by
         the assets glob but unused; delete the files if the binary size matters
         more than having them to hand.
 

@@ -12,7 +12,8 @@ About window, and the few widgets every plugin draws with.
 | **Look and feel** | `LookAndFeelBase.h/.cpp` |
 | **Assets and type** | `EmbeddedAssets.h/.cpp`, `Fonts.h/.cpp` |
 | **Widgets** | `IconButton.h`, `AboutPanel.h/.cpp`, `ParameterControl.h/.cpp`, `SegmentedControl.h` |
-| **Tests** | `tests/ThemeTests.cpp`, `tests/ThemeReachTests.cpp`, `tests/SegmentedControlTests.cpp` |
+| **Identity** | `HouseOverrides.h` (faces and corner radius, optional per plugin) |
+| **Tests** | `tests/ThemeTests.cpp`, `tests/ThemeReachTests.cpp`, `tests/PluginOverridesTests.cpp`, `tests/SegmentedControlTests.cpp` |
 
 ## Using it from a plugin
 
@@ -64,6 +65,18 @@ plugin missing one does not compile, which is the point.
   theme editor are windows of their own and each owns one, so they wear the plugin's
   look rather than the house default.
 
+
+- **`source/PluginHouseOverrides.h`** — *optional*. What a plugin with an identity of
+  its own changes beyond colours (its colours are `CELINE_PLUGIN_SHARED_ROLE_VALUES`
+  in `PluginThemeRoles.h`). Picked up by name with `__has_include`, so a plugin without
+  one is unaffected. Every macro is optional:
+
+  - `CELINE_PLUGIN_CORNER_RADIUS` — a float replacing `Theme::cornerRadius` (8 by
+    default). `0` makes every rounded path in the kit square.
+  - `CELINE_PLUGIN_FONT_LIGHT`, `CELINE_PLUGIN_FONT_BOLD`, `CELINE_PLUGIN_FONT_LOGO` —
+    asset filenames replacing `Jura-Light.ttf`, `Jura-Bold.ttf` and
+    `NicoMoji-Regular.ttf`. Mono stays JetBrains Mono. The file named must be embedded
+    in the plugin's `assets/`, since a missing one falls back silently.
 
 - **Assets** :
   `Jura-Light.ttf`, `Jura-Bold.ttf`, `JetBrainsMono-Regular.ttf`,

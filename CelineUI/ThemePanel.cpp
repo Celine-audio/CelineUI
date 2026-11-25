@@ -18,11 +18,15 @@ namespace
 
     /** Ink that stays readable on a swatch whatever colour the swatch is. The eye
         reads contrast against lightness rather than against hue, so this asks the
-        colour how light it is rather than picking by taste. */
+        colour how light it is rather than picking by taste.
+
+        The two inks are the theme's own dark ground and light ink, not literals: the
+        house ships them at the same values, and a plugin with its own greys gets ink that
+        is its own too. */
     juce::Colour inkOn (juce::Colour background)
     {
-        return background.getPerceivedBrightness() > 0.55f ? juce::Colour (0xff17151a)
-                                                           : juce::Colour (0xfff9fbff);
+        return background.getPerceivedBrightness() > 0.55f ? Theme::consoleBackground()
+                                                           : Theme::text();
     }
 }
 
@@ -56,8 +60,6 @@ void ThemePanel::Row::applyColours()
     name.setColour (juce::Label::textColourId, Theme::textDim());
     hex.setColour (juce::TextEditor::backgroundColourId, Theme::field());
     hex.setColour (juce::TextEditor::textColourId, Theme::textDim());
-    hex.setColour (juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
-    hex.setColour (juce::TextEditor::focusedOutlineColourId, juce::Colours::transparentBlack);
 }
 
 void ThemePanel::Row::refresh()
@@ -95,13 +97,18 @@ void ThemePanel::Row::paint (juce::Graphics& g)
 {
     const auto colour = Theme::colour (role);
 
+    // Two less than the kit's radius, so a swatch sits inside a rounded field without
+    // touching it. Clamped, because a plugin that is square throughout has a radius of
+    // zero and a negative one is not a shape anybody asked for.
+    const auto radius = juce::jmax (0.0f, Theme::cornerRadius - 2.0f);
+
     g.setColour (colour);
-    g.fillRoundedRectangle (swatch.toFloat(), Theme::cornerRadius - 2.0f);
+    g.fillRoundedRectangle (swatch.toFloat(), radius);
 
     // A hairline in the ink the swatch would carry, so a colour that matches the panel
     // behind it is still a shape rather than a hole.
     g.setColour (inkOn (colour).withAlpha (0.25f));
-    g.drawRoundedRectangle (swatch.toFloat().reduced (0.5f), Theme::cornerRadius - 2.0f, 1.0f);
+    g.drawRoundedRectangle (swatch.toFloat().reduced (0.5f), radius, 1.0f);
 }
 
 void ThemePanel::Row::resized()

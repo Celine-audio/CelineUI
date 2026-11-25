@@ -595,12 +595,12 @@ void LookAndFeelBase::drawPopupMenuItem (juce::Graphics& g, const juce::Rectangl
     if (isTicked)
     {
         g.setColour (Theme::accent().withAlpha (isHighlighted ? 0.95f : 0.75f));
-        g.fillRoundedRectangle (bounds, Theme::cornerRadius - 2.0f);
+        g.fillRoundedRectangle (bounds, juce::jmax (0.0f, Theme::cornerRadius - 2.0f));
     }
     else if (isHighlighted && isActive)
     {
         g.setColour (Theme::surfaceBright());
-        g.fillRoundedRectangle (bounds, Theme::cornerRadius - 2.0f);
+        g.fillRoundedRectangle (bounds, juce::jmax (0.0f, Theme::cornerRadius - 2.0f));
     }
 
     const auto font = getPopupMenuFont();

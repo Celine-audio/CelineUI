@@ -170,7 +170,7 @@ TEST_CASE ("A theme file forgives what it can and refuses what it cannot", "[the
         REQUIRE (juce::JSON::parse (R"({"colours":{"chrome":"not a colour"}})", parsed).wasOk());
         REQUIRE (palette.fromVar (parsed).wasOk());
 
-        CHECK (Theme::chrome() == juce::Colour (0xff3b334b));
+        CHECK (Theme::chrome() == juce::Colour (Theme::info()[(size_t) Theme::Role::chrome].shipped));
     }
 
     SECTION ("a file that is not a theme is refused")

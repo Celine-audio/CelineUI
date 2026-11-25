@@ -35,4 +35,5 @@ target_include_directories(CelineUI INTERFACE "${CMAKE_CURRENT_LIST_DIR}")
 set(CELINE_UI_TESTS
     "${CMAKE_CURRENT_LIST_DIR}/tests/SegmentedControlTests.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/tests/ThemeTests.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/tests/ThemeReachTests.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/tests/ThemeReachTests.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/tests/PluginOverridesTests.cpp")

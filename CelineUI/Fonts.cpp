@@ -1,4 +1,5 @@
 #include "Fonts.h"
+#include "HouseOverrides.h"
 
 #include <BinaryData.h>
 
@@ -12,17 +13,17 @@ namespace Celine::Fonts
         {
             switch (weight)
             {
-                case Weight::Light: return "Jura-Light.ttf";
-                case Weight::Bold:  return "Jura-Bold.ttf";
+                case Weight::Light: return CELINE_PLUGIN_FONT_LIGHT;
+                case Weight::Bold:  return CELINE_PLUGIN_FONT_BOLD;
                 case Weight::Mono:  return "JetBrainsMono-Regular.ttf";
-                case Weight::Logo:  return "NicoMoji-Regular.ttf";
+                case Weight::Logo:  return CELINE_PLUGIN_FONT_LOGO;
                 case Weight::Display:    return "Inter-ExtraBold.ttf";
                 case Weight::Heading:    return "Inter-Bold.ttf";
                 case Weight::MonoMedium: return "JetBrainsMono-Medium.ttf";
                 case Weight::MonoBold:   return "JetBrainsMono-Bold.ttf";
             }
 
-            return "Jura-Light.ttf";
+            return CELINE_PLUGIN_FONT_LIGHT;
         }
 
         /** Found by original filename, not by the identifier JUCE derives from

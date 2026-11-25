@@ -1,5 +1,6 @@
 #pragma once
 
+#include "HouseOverrides.h"
 #include "ThemePalette.h"
 
 #include <juce_gui_basics/juce_gui_basics.h>
@@ -202,8 +203,9 @@ namespace Celine
         // through four files as literals. Not themeable: a layout is not a colour, and
         // a theme that could move these would be a theme that could break the window.
 
-        /** Corner radius on every button, field and pill. */
-        inline constexpr float cornerRadius = 8.0f;
+        /** Corner radius on every button, field and pill. A plugin that is square
+            throughout overrides it from PluginHouseOverrides.h; see HouseOverrides.h. */
+        inline constexpr float cornerRadius = CELINE_PLUGIN_CORNER_RADIUS;
 
         /** Border weight on buttons and fields. */
         inline constexpr float borderWidth = 1.2f;

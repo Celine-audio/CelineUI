@@ -188,12 +188,10 @@ AboutPanel::AboutPanel()
     // JetBrains Mono, which is embedded for exactly this: the notices are a
     // dot-leader table and a proportional face turns them into ragged prose.
     body.setFont (Fonts::mono (13.0f));
-    // Transparent, and no outline. The dark panel behind it is the ground -- an editor
-    // painting one of its own would be a second rectangle inside the first, and a rule
-    // around it the only hard line in the window.
+    // Transparent, and no outline of its own. The dark panel behind it is the ground -- an
+    // editor painting one of its own would be a second rectangle inside the first. The
+    // look and feel decides whether a read-only editor has a rule; the house has none.
     body.setColour (juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
-    body.setColour (juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
-    body.setColour (juce::TextEditor::focusedOutlineColourId, juce::Colours::transparentBlack);
 
     body.setText (aboutBodyText(), false);
     addAndMakeVisible (body);
