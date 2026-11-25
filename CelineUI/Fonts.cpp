@@ -16,6 +16,10 @@ namespace Celine::Fonts
                 case Weight::Bold:  return "Jura-Bold.ttf";
                 case Weight::Mono:  return "JetBrainsMono-Regular.ttf";
                 case Weight::Logo:  return "NicoMoji-Regular.ttf";
+                case Weight::Display:    return "Inter-ExtraBold.ttf";
+                case Weight::Heading:    return "Inter-Bold.ttf";
+                case Weight::MonoMedium: return "JetBrainsMono-Medium.ttf";
+                case Weight::MonoBold:   return "JetBrainsMono-Bold.ttf";
             }
 
             return "Jura-Light.ttf";
@@ -76,8 +80,9 @@ namespace Celine::Fonts
             /** `tried` matters as much as the pointer: a weight that is not
                 embedded must not be re-parsed on every repaint just because the
                 answer came back null. */
-            std::array<juce::Typeface::Ptr, 4> faces {};
-            std::array<bool, 4> tried { false, false, false, false };
+            static constexpr size_t numWeights = 8;
+            std::array<juce::Typeface::Ptr, numWeights> faces {};
+            std::array<bool, numWeights> tried {};
 
             static FontCache* instance;
         };
@@ -107,9 +112,49 @@ namespace Celine::Fonts
         return bold(heightInPixels);
     }
 
+    namespace
+    {
+        /** The face a weight is drawn in: its own if embedded, else the nearest one the
+            plugin has. Only the optional faces have somewhere to fall back to. */
+        juce::Typeface::Ptr faceFor(Weight weight)
+        {
+            if (auto face = typeface(weight))
+                return face;
+
+            switch (weight)
+            {
+                case Weight::Display:
+                case Weight::Heading:    return typeface(Weight::Bold);
+                case Weight::MonoMedium:
+                case Weight::MonoBold:   return typeface(Weight::Mono);
+                case Weight::Light:
+                case Weight::Bold:
+                case Weight::Mono:
+                case Weight::Logo:       break;
+            }
+
+            return {};
+        }
+    } // namespace
+
+    juce::Font css(Weight weight, float cssPixels, float trackingPixels)
+    {
+        auto options = juce::FontOptions(cssPixels);
+
+        if (auto face = faceFor(weight))
+            options = juce::FontOptions(face);
+
+        auto font = juce::Font(options.withPointHeight(cssPixels));
+
+        if (trackingPixels != 0.0f && cssPixels > 0.0f)
+            font = font.withExtraKerningFactor(trackingPixels / cssPixels);
+
+        return font;
+    }
+
     juce::Font font(Weight weight, float heightInPixels)
     {
-        if (auto face = typeface(weight))
+        if (auto face = faceFor(weight))
             return juce::Font(juce::FontOptions(face).withHeight(heightInPixels));
 
         // Not embedded. JUCE's default is wrong-looking but readable, which beats

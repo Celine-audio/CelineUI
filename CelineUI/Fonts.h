@@ -39,6 +39,25 @@ namespace Celine
                 with a look of its own, which is the point — and the reason it is not
                 on this list for anything else to reach for. */
             Logo,
+
+            // Optional faces, for a plugin drawn in the hardware-strip language: used
+            // only where the plugin embeds the file, and otherwise answered by the
+            // nearest face it does have (see font()), so a plugin that never ships
+            // them looks exactly as it did.
+
+            /** Inter ExtraBold: labels and names set in tracked capitals. Falls back
+                to Bold. */
+            Display,
+
+            /** Inter Bold: a heading a step below Display. Falls back to Bold. */
+            Heading,
+
+            /** JetBrains Mono Medium: values. Falls back to Mono. */
+            MonoMedium,
+
+            /** JetBrains Mono Bold: captions, and the words on keys. Falls back to
+                Mono. */
+            MonoBold,
         };
 
         /** The typeface, parsed once. Null if the file is not embedded. */
@@ -55,6 +74,13 @@ namespace Celine
         inline juce::Font light(float height) { return font(Weight::Light, height); }
         inline juce::Font bold(float height) { return font(Weight::Bold, height); }
         inline juce::Font mono(float height) { return font(Weight::Mono, height); }
+
+        /** A font sized the way a stylesheet sizes it: `cssPixels` is the em, not the
+            line. A design worked out in HTML -- the hardware-strip language was --
+            gives its sizes this way, and JUCE's own `withHeight` would come out a fifth
+            smaller for the same number, since it measures ascent plus descent.
+            `trackingPixels` is CSS letter-spacing, in pixels. */
+        juce::Font css(Weight weight, float cssPixels, float trackingPixels = 0.0f);
 
         /** The wordmark's face. Falls back to Jura Bold rather than to the platform
             sans if Nico Moji is not embedded: a missing display face should leave the

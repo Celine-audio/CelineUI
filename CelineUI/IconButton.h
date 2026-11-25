@@ -57,6 +57,14 @@ namespace Celine
             one: paintButton runs again on every theme change and reads this afresh, so
             a colour handed in from outside would be painted over the first time the
             palette moved. */
+        /** How round the button's corners are. The house radius unless a plugin drawn
+            in a squarer language asks otherwise. */
+        void setCornerRadius (float radius)
+        {
+            cornerRadius = radius;
+            repaint();
+        }
+
         void setFillRole (Theme::Role role)
         {
             fillRole = role;
@@ -113,7 +121,7 @@ namespace Celine
                                          : Theme::colour (fillRole);
 
                 g.setColour (Theme::underPointer (base, highlighted, down));
-                g.fillRoundedRectangle (bounds, Theme::cornerRadius);
+                g.fillRoundedRectangle (bounds, cornerRadius);
             }
             else if (down || highlighted)
             {
@@ -121,7 +129,7 @@ namespace Celine
                 // of what is drawn, and it stays inside whatever is behind it as its
                 // frame.
                 g.setColour (Theme::text().withAlpha (down ? 0.16f : 0.08f));
-                g.fillRoundedRectangle (bounds.reduced (1.0f), Theme::cornerRadius * 0.6f);
+                g.fillRoundedRectangle (bounds.reduced (1.0f), cornerRadius * 0.6f);
             }
 
             // Fill only, no rule. Every button here is filled with something that
@@ -163,6 +171,7 @@ namespace Celine
         float iconInset = 0.18f;
 
     private:
+        float cornerRadius = Theme::cornerRadius;
         std::unique_ptr<juce::Drawable> icon;
         std::optional<juce::Colour> activeColour;
         std::optional<juce::Colour> iconColour;

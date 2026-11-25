@@ -46,11 +46,22 @@ namespace Celine::Theme
     //==========================================================================
     const std::array<RoleInfo, numRoles>& info() noexcept
     {
-        static const std::array<RoleInfo, numRoles> all {
-            #define CELINE_THEME_ROLE_INFO(name, label, group, value) RoleInfo { #name, label, group, value },
-            CELINE_THEME_ROLES (CELINE_THEME_ROLE_INFO)
-            #undef CELINE_THEME_ROLE_INFO
-        };
+        static const std::array<RoleInfo, numRoles> all = []
+        {
+            std::array<RoleInfo, numRoles> table {
+                #define CELINE_THEME_ROLE_INFO(name, label, group, value) RoleInfo { #name, label, group, value },
+                CELINE_THEME_ROLES (CELINE_THEME_ROLE_INFO)
+                #undef CELINE_THEME_ROLE_INFO
+            };
+
+            // Then the plugin's own values for shared roles, if it gives any -- see
+            // CELINE_PLUGIN_SHARED_ROLE_VALUES in ThemeRoles.h.
+            #define CELINE_THEME_ROLE_VALUE(name, value) table[(size_t) Role::name].shipped = value;
+            CELINE_PLUGIN_SHARED_ROLE_VALUES (CELINE_THEME_ROLE_VALUE)
+            #undef CELINE_THEME_ROLE_VALUE
+
+            return table;
+        }();
 
         return all;
     }

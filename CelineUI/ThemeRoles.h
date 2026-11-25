@@ -32,6 +32,19 @@
     X (danger,            "Danger",              "States",   0xfff92672)                \
     X (error,             "Error",               "States",   0xfff92672)
 
+/** A plugin's own shipped values for shared roles, from its PluginThemeRoles.h:
+
+        #define CELINE_PLUGIN_SHARED_ROLE_VALUES(X) \
+            X (consoleBackground, 0xff121212)       \
+            X (surface,           0xff262626)
+
+    The role keeps its name, its label and its group -- a theme file written by one plugin
+    still loads into another -- and only what it ships as changes. A plugin that says
+    nothing ships the house values above. */
+#ifndef CELINE_PLUGIN_SHARED_ROLE_VALUES
+ #define CELINE_PLUGIN_SHARED_ROLE_VALUES(X)
+#endif
+
 /** The shared list and whatever this plugin adds to it. */
 #define CELINE_THEME_ROLES(X)                                                           \
     CELINE_SHARED_THEME_ROLES(X)                                                        \

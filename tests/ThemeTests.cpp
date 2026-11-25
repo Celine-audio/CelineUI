@@ -78,9 +78,14 @@ TEST_CASE ("The shipped colours are what the accessors answer", "[theme]")
 {
     ShippedPalette shipped;
 
+    // Against the table rather than against literals: a plugin may ship its own value
+    // for a shared role (CELINE_PLUGIN_SHARED_ROLE_VALUES), and this suite runs in
+    // every plugin.
+    const auto shippedValue = [] (Theme::Role role) { return juce::Colour (Theme::info()[(size_t) role].shipped); };
+
     CHECK (Theme::palette().isShipped());
-    CHECK (Theme::chrome() == juce::Colour (0xff3b334b));
-    CHECK (Theme::text() == juce::Colour (0xfff9fbff));
+    CHECK (Theme::chrome() == shippedValue (Theme::Role::chrome));
+    CHECK (Theme::text() == shippedValue (Theme::Role::text));
 }
 
 TEST_CASE ("A theme survives the round trip through a file", "[theme]")
@@ -96,7 +101,7 @@ TEST_CASE ("A theme survives the round trip through a file", "[theme]")
     REQUIRE (palette.saveTo (temporary.getFile()).wasOk());
 
     palette.reset();
-    REQUIRE (Theme::chrome() == juce::Colour (0xff3b334b));
+    REQUIRE (Theme::chrome() == juce::Colour (Theme::info()[(size_t) Theme::Role::chrome].shipped));
 
     REQUIRE (palette.loadFrom (temporary.getFile()).wasOk());
 
