@@ -91,7 +91,7 @@ namespace Celine
             // narrowest segment. Nine capsules across a window do not leave room for
             // thirteen-pixel words, and a group whose labels were each sized for
             // themselves would read as a mistake rather than as one control.
-            auto label = Fonts::bold (juce::jmin (13.0f, getHeight() * 0.46f));
+            auto label = Fonts::bold (juce::jmin (13.0f, (float) getHeight() * 0.46f));
             const auto room = boundsFor (0).getWidth() - 7.0f;
 
             auto widest = 0.0f;
@@ -194,9 +194,9 @@ namespace Celine
                 return {};
 
             const auto notch = Theme::borderWidth;
-            const auto width = (getWidth() - notch * 2.0f) / (float) segments.size();
+            const auto width = ((float) getWidth() - notch * 2.0f) / (float) segments.size();
 
-            return { notch + (float) index * width, notch, width, getHeight() - notch * 2.0f };
+            return { notch + (float) index * width, notch, width, (float) getHeight() - notch * 2.0f };
         }
 
         int indexAt (juce::Point<float> position) const
